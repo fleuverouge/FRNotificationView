@@ -4,7 +4,5 @@
 #ifndef SimpleNotificationViewDemo_SimpleNotificationViewDemo_Bridging_Header_h
 #define SimpleNotificationViewDemo_SimpleNotificationViewDemo_Bridging_Header_h
 
-#import <FontAwesomeIconFactory/NIKFontAwesomeIconFactory.h>
-#import <FontAwesomeIconFactory/NIKFontAwesomeIconFactory+iOS.h>
 
 #endif

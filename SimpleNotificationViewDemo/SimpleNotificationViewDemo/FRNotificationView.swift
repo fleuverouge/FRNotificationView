@@ -30,6 +30,12 @@ enum FRViewPosition: UInt, CustomDebugStringConvertible {
     }
 }
 
+enum FROverlayStyle {
+    case None
+    case Blur(style: UIBlurEffectStyle, alpha: CGFloat) //iOS 8+ only
+    case SolidColor(UIColor)
+}
+
 enum FRViewTransitionStyle: CustomDebugStringConvertible {
     case None
     case Default
@@ -183,16 +189,7 @@ class FRNotificationView: UIView {
     // Dismiss view when view is tapped
     var dismissOnTap = true
     private var overlayView : UIView?
-    var blockBeneathViews = false {
-        didSet {
-            if (blockBeneathViews) {
-                addOverlayView()
-            }
-            else {
-                removeOverlayView()
-            }
-        }
-    }
+    var overlayStyle = FROverlayStyle.None
     
     var contentWidthMode = FRViewWidthConstraintMode.AutoAdjustToFitContent(minimumXMargin: 8, minimumHeight: 0)
     
@@ -326,6 +323,13 @@ class FRNotificationView: UIView {
         
         if sview == nil {
             self.sView = UIApplication.sharedApplication().keyWindow
+
+//            self.sView = UIWindow(frame: UIScreen.mainScreen().bounds)
+//            if let window = self.sView as? UIWindow {
+//                window.backgroundColor = UIColor.clearColor()
+//                window.windowLevel = UIWindowLevelAlert
+//                window.makeKeyAndVisible()
+//            }
         }
         else {
             self.sView = sview
@@ -338,9 +342,7 @@ class FRNotificationView: UIView {
         logInfo()
         setupSubviews()
         
-        if (blockBeneathViews) {
-            addOverlayView()
-        }
+        addOverlayView()
         
         switch self.transitionStyle{
         case .None:
@@ -405,9 +407,44 @@ class FRNotificationView: UIView {
     
     // MARK: - Subviews arragement
     private func addOverlayView() {
-        if overlayView == nil {
-            overlayView = UIView()
-            overlayView!.backgroundColor = UIColor(white: 0, alpha: 0.7)
+        switch overlayStyle {
+        case .None:
+            removeOverlayView()
+            return
+            
+        case .Blur(let style, let alpha):
+            if overlayView == nil {
+                overlayView = UIView()
+            }
+
+            if !UIAccessibilityIsReduceTransparencyEnabled() {
+//                overlayView?.removeFromSuperview()
+                let blurEffect = UIBlurEffect(style: style)
+//                overlayView = UIVisualEffectView(effect: blurEffect)
+                for subview in overlayView!.subviews {
+                    subview.removeFromSuperview()
+                }
+                overlayView!.backgroundColor = UIColor.clearColor()
+                let blurView = UIVisualEffectView(effect: blurEffect)
+                blurView.frame = UIScreen.mainScreen().bounds
+                blurView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+                overlayView!.addSubview(blurView)
+                overlayView!.alpha = alpha
+            }
+            else {
+//                if overlayView == nil {
+//                    overlayView = UIView()
+//                    overlayView!.backgroundColor = UIColor(white: 0, alpha: 0.7)
+//                }
+                overlayView!.backgroundColor = UIColor(white: 0, alpha: 0.7)
+            }
+            break
+        case .SolidColor(let color):
+            if overlayView == nil {
+                overlayView = UIView()
+            }
+            overlayView!.backgroundColor = color
+            break
         }
         
         guard let oview = overlayView else {
@@ -415,15 +452,15 @@ class FRNotificationView: UIView {
             return
         }
         
-        if oview.superview == nil {
-            if let parent = sView {
+        if let parent = sView {
+            if oview.superview == nil {
                 parent.addSubview(oview)
-                parent.bringSubviewToFront(self)
                 oview.translatesAutoresizingMaskIntoConstraints = false
                 let viewDict = ["overlay": oview]
                 parent.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-0-[overlay]-0-|", options: [], metrics: nil, views: viewDict))
                 parent.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-0-[overlay]-0-|", options: [], metrics: nil, views: viewDict))
             }
+            parent.bringSubviewToFront(self)
         }
     }
     

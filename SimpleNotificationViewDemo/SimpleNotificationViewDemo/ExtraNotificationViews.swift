@@ -24,15 +24,14 @@ extension FRNotificationView {
         self.init(message: message)
         position = .Top
         messageColor = UIColor.whiteColor()
-        blockBeneathViews = false
         var subviewPosition = FRViewPosition.Left
         var subviewSize = CGSize(width: 30, height: 30)
-        
+        overlayStyle = .None
         var subView: UIView!
         switch type {
         case .Loading:
             subviewPosition = .Top
-            blockBeneathViews = true
+            overlayStyle = .SolidColor(UIColor(white: 0.0, alpha: 0.7))
             position = .Middle
             subviewSize = CGSize(width: 40, height: 40)
             let indicator = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
@@ -90,7 +89,7 @@ class FRAlertView: FRNotificationView {
         self.actionButtonsTitles = actionButtonsTitles
         self.cancelButtonTitle = cancelButtonTitle
         self.buttonTapHandler = buttonTapHandler
-        blockBeneathViews = true
+        overlayStyle = .Blur(style: .Dark, alpha: 0.7)
         dismissOnTap = false
         displayDuration = 0
         contentWidthMode = FRViewWidthConstraintMode.ProportionalToSuperView(ratio: 0.8, minWidth: 0, maxWidth: 400)
