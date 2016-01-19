@@ -409,34 +409,45 @@ class FRNotificationView: UIView {
     private func addOverlayView() {
         switch overlayStyle {
         case .None:
-            removeOverlayView()
+            overlayView?.removeFromSuperview()
             return
             
         case .Blur(let style, let alpha):
             if overlayView == nil {
                 overlayView = UIView()
             }
+            overlayView!.backgroundColor = UIColor.clearColor()
+            overlayView!.alpha = alpha
 
             if !UIAccessibilityIsReduceTransparencyEnabled() {
-//                overlayView?.removeFromSuperview()
                 let blurEffect = UIBlurEffect(style: style)
-//                overlayView = UIVisualEffectView(effect: blurEffect)
+                var blurView: UIVisualEffectView?
                 for subview in overlayView!.subviews {
-                    subview.removeFromSuperview()
+                    if let ev = subview as? UIVisualEffectView {
+                        blurView = ev
+                        ev.effect = blurEffect
+                        break
+                    }
                 }
-                overlayView!.backgroundColor = UIColor.clearColor()
-                let blurView = UIVisualEffectView(effect: blurEffect)
-                blurView.frame = UIScreen.mainScreen().bounds
-                blurView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
-                overlayView!.addSubview(blurView)
-                overlayView!.alpha = alpha
+                if (blurView == nil) {
+                    blurView = UIVisualEffectView(effect: blurEffect)
+                    blurView!.frame = UIScreen.mainScreen().bounds
+                    blurView!.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+                    overlayView!.addSubview(blurView!)
+                }
             }
             else {
-//                if overlayView == nil {
-//                    overlayView = UIView()
-//                    overlayView!.backgroundColor = UIColor(white: 0, alpha: 0.7)
-//                }
-                overlayView!.backgroundColor = UIColor(white: 0, alpha: 0.7)
+                switch style {
+                case .Dark:
+                    overlayView!.backgroundColor = UIColor(white: 0.0, alpha: alpha)
+                    break
+                case .ExtraLight:
+                    overlayView!.backgroundColor = UIColor(white: 1.0, alpha: alpha)
+                    break
+                case .Light:
+                    overlayView!.backgroundColor = UIColor(white: 0.5, alpha: alpha)
+                    break
+                }
             }
             break
         case .SolidColor(let color):
@@ -461,12 +472,6 @@ class FRNotificationView: UIView {
                 parent.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-0-[overlay]-0-|", options: [], metrics: nil, views: viewDict))
             }
             parent.bringSubviewToFront(self)
-        }
-    }
-    
-    private func removeOverlayView() {
-        if let oview = overlayView {
-            oview.removeFromSuperview()
         }
     }
     
@@ -1162,7 +1167,7 @@ class FRNotificationView: UIView {
         isAnimating = false
         isDismissed = true
         isShown = false
-        removeOverlayView()
+        overlayView?.removeFromSuperview()
         removeFromSuperview()
         self.verticalConstraint = nil
         self.horizontalConstraint = nil
