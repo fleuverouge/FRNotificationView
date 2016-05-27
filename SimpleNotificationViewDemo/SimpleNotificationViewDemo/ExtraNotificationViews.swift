@@ -93,6 +93,7 @@ class FRAlertView: FRNotificationView {
         dismissOnTap = false
         displayDuration = 0
         contentWidthMode = FRViewWidthConstraintMode.ProportionalToSuperView(ratio: 0.8, minWidth: 0, maxWidth: 400)
+        titleMargin = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
     }
     
     override func show(transitionStyle: FRViewTransitionStyle? = nil, inView sview: UIView? = nil, completionBlock: (() -> ())? = nil) {
@@ -116,8 +117,8 @@ class FRAlertView: FRNotificationView {
                 button.titleLabel!.font = buttonFont
                 buttons.append(button)
                 button.tag = index
-                index++
-                button.addTarget(self, action: "didTapOnButton:", forControlEvents: .TouchUpInside)
+                index += 1
+                button.addTarget(self, action: #selector(didTapOnButton(_:)), forControlEvents: .TouchUpInside)
                 let topBorder = UIView()
                 topBorder.backgroundColor = UIColor.lightGrayColor()
                 button.addSubview(topBorder)
@@ -145,7 +146,7 @@ class FRAlertView: FRNotificationView {
         button.titleLabel!.minimumScaleFactor = 0.5
         button.titleLabel!.font = buttonFont
         buttons.append(button)
-        button.addTarget(self, action: "didTapCancelButton", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(didTapCancelButton), forControlEvents: .TouchUpInside)
         let topBorder = UIView()
         topBorder.backgroundColor = UIColor.lightGrayColor()
         button.addSubview(topBorder)

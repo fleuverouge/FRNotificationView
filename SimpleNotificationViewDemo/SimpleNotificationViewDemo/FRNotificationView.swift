@@ -224,16 +224,13 @@ class FRNotificationView: UIView {
     
     private var message = ""
     private var customSubViews : [FRViewPosition: FRCustomViewGroup]?
-    private var heightConstraint : NSLayoutConstraint?
     private var verticalConstraint: NSLayoutConstraint?
     private var horizontalConstraint: NSLayoutConstraint?
-    private var widthConstraint: NSLayoutConstraint?
     
     private var messageLabel: UILabel!
     private var messageOutterMargin = UIEdgeInsetsZero
     private var titleLabel: UILabel?
     
-//    private var finalConstraints = [NSLayoutConstraint]()
     /*
     // Only override drawRect: if you perform custom drawing.
     // An empty implementation adversely affects performance during animation.
@@ -256,20 +253,6 @@ class FRNotificationView: UIView {
         clipsToBounds = true
     }
     
-//    func addSubviews(views:[UIView], position: ViewPosition, sideDimension : CGFloat, minimumDimension : CGFloat = 1.0, margin: UIEdgeInsets = UIEdgeInsets(top: 8.0, left: 8.0, bottom: 8.0, right: 8.0), innerPadding : CGFloat = 8.0) {
-//        if (customSubViews == nil) {
-//            customSubViews = [ViewPosition: CustomViewGroup]()
-//        }
-//        if (customSubViews![position] == nil) {
-//            customSubViews![position] = CustomViewGroup(views: views, innerPadding: innerPadding, outterMargin: margin, sideDimension: sideDimension, minimumDimension: minimumDimension)
-//        }
-//        else {
-//            customSubViews![position]!.views.appendContentsOf(views)
-//            customSubViews![position]!.sideDimension = sideDimension
-//            customSubViews![position]!.outterMargin = margin
-//            customSubViews![position]!.innerPadding = innerPadding
-//        }
-//    }
     func addSubviews(views:[UIView], position: FRViewPosition, innerPadding: CGFloat = 8.0, margin: UIEdgeInsets = UIEdgeInsets(top: 8.0, left: 8.0, bottom: 8.0, right: 8.0), arrangementOptions: FRViewArrangementOptions = FRViewArrangementOptions.StretchToFillEdge(sideDimension: 40.0, minimumSize: 2.0)) {
         
         // Remove invalid positions
@@ -774,20 +757,20 @@ class FRNotificationView: UIView {
             topWindow.addConstraint(maxWidthConstraint)
             break
         case .HorizontalMargin(let left, right: let right):
-            widthConstraint = NSLayoutConstraint(item: self, attribute: .Width, relatedBy: .Equal, toItem: topWindow, attribute: .Width, multiplier: 1.0, constant: -left - right)
-            widthConstraint!.priority = 751
-            topWindow.addConstraint(widthConstraint!)
+            let widthConstraint = NSLayoutConstraint(item: self, attribute: .Width, relatedBy: .Equal, toItem: topWindow, attribute: .Width, multiplier: 1.0, constant: -left - right)
+            widthConstraint.priority = 751
+            topWindow.addConstraint(widthConstraint)
 //            messageLabel.preferredMaxLayoutWidth = UIScreen.mainScreen().bounds.size.width + widthConstraint!.constant - messageOutterMargin.left - messageOutterMargin.right
             break
         case .FixedWidth(let width):
-            widthConstraint = NSLayoutConstraint(item: self, attribute: .Width, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1.0, constant: width)
-            widthConstraint!.priority = 751
-            topWindow.addConstraint(widthConstraint!)
+            let widthConstraint = NSLayoutConstraint(item: self, attribute: .Width, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1.0, constant: width)
+            widthConstraint.priority = 751
+            topWindow.addConstraint(widthConstraint)
             break
         case .ProportionalToSuperView(let ratio, let minWidth, let maxWidth):
-            widthConstraint = NSLayoutConstraint(item: self, attribute: .Width, relatedBy: .Equal, toItem: topWindow, attribute: .Width, multiplier: ratio, constant: 0)
-            widthConstraint!.priority = 751
-            topWindow.addConstraint(widthConstraint!)
+            let widthConstraint = NSLayoutConstraint(item: self, attribute: .Width, relatedBy: .Equal, toItem: topWindow, attribute: .Width, multiplier: ratio, constant: 0)
+            widthConstraint.priority = 751
+            topWindow.addConstraint(widthConstraint)
             
             minimumViewWidth = max(minimumViewWidth, minWidth)
             if (maxWidth > minimumViewWidth) {
@@ -1125,7 +1108,7 @@ class FRNotificationView: UIView {
         isShown = true
         isAnimating = false
         if (dismissOnTap) {
-            let gest = UITapGestureRecognizer(target: self, action: "didTapOnAlertView")
+            let gest = UITapGestureRecognizer(target: self, action: #selector(didTapOnAlertView))
             gest.numberOfTapsRequired = 1
             gest.cancelsTouchesInView = false
             addGestureRecognizer(gest)
@@ -1139,13 +1122,6 @@ class FRNotificationView: UIView {
             return
         }
         
-//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(displayDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), {[weak self] () -> Void in
-//            if let a = self {
-//                if (a.isShown) {
-//                    a.dismiss(completionBlock: a.dismissHandler)
-//                }
-//            }
-//        })
         Queue.Main.execute(after: displayDuration, closure: {
             [weak self] in
             if let a = self {
@@ -1173,7 +1149,6 @@ class FRNotificationView: UIView {
         self.horizontalConstraint = nil
         dismissHandler?()
     }
-    
     
     private func defaultStyle() -> FRViewTransitionStyle {
         switch (position) {

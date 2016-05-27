@@ -154,14 +154,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             leftButton.setTitle("OK", forState: UIControlState.Normal)
             leftButton.backgroundColor = UIColor(red: 0.498, green: 0.6471, blue: 0, alpha: 1.0) /* #7fa500 */
             leftButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-            leftButton.addTarget(self, action: "didTapButton:", forControlEvents: .TouchUpInside)
+            leftButton.addTarget(self, action: #selector(didTapButton(_:)), forControlEvents: .TouchUpInside)
             leftButton.titleLabel!.font = UIFont.boldSystemFontOfSize(16)
             
             let rightButton = UIButton(type: .Custom)
             rightButton.setTitle("Dismiss", forState: UIControlState.Normal)
             rightButton.backgroundColor = UIColor(red: 0.1725, green: 0.3098, blue: 0.3765, alpha: 1.0) /* #2c4f60 */
             rightButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-            rightButton.addTarget(self, action: "didTapButton:", forControlEvents: .TouchUpInside)
+            rightButton.addTarget(self, action: #selector(didTapButton(_:)), forControlEvents: .TouchUpInside)
             rightButton.titleLabel!.font = UIFont.boldSystemFontOfSize(16)
             
             let arrangement = FRViewArrangementOptions.AnchorToCorner(corner: .Right, width: 80, height: 32)
